@@ -1,15 +1,3 @@
-/*============================== CUSTOM HEADER =================================
-    CUSTOM HEADER FOR THE PROJECT, INCLUDES:
-    - STANDARD LIBRARY
-    - DEFINITION
-    - SHARED VARIABLES
-    - CUSTOMISED FUNCTIONS PROTOTYPE
-
-    File:      smartpanipipe.h
-    Author:    Lucky Lim
-==============================================================================*/
-
-
 /*============================ STANDARD LIBRARY=================================
 ==============================================================================*/
 
@@ -40,19 +28,20 @@
 // XTAL_FREQ = CLOCK FREQUENCY, i.e.
 // For PIC18F25k22 with Internal Clock Used -> 111 - 16MHZ
 #define _XTAL_FREQ 16000000
-#define WATER_THRESHOLD 15
 #define SOLAR_THRESHOLD 15
-#define OFFSET (char)31
-#define STOP_BIT (char)164
-#define WARNING_BIT (char)165
-#define START_BIT (char)163
+#define SOLAR_OFFSET 10
+#define OFFSET (char)32
+#define DATA_PREFIX (char)163
+#define DATA_SUFFIX (char)164
+#define WARNING_PREFIX (char)165
+#define CONFIG_PREFIX (char)167
 ///////////////////////////////////////
 /////// SENSOR PIN CONNECTION  ////////
 ///////////////////////////////////////
 // DHT11 - Temperature and Humidity Sensor
-#define DHT11_POWER_CONFIG TRISAbits.RA0
+#define DHT11_POWER_CONFIG TRISAbits.RA6
 #define DHT11_SIGNAL_CONFIG TRISCbits.RC0
-#define DHT11_POWER PORTAbits.RA0
+#define DHT11_POWER PORTAbits.RA6
 #define DHT11_SIGNAL PORTCbits.RC0
 
 // HC-SR04 - Ultrasonic Distance Measuring Sensor
@@ -72,14 +61,15 @@
 /////// SOLAR PANEL AND BATTERY  ////////
 ///////////////////////////////////////
 // Solar Panel
-#define SOLAR_POWER_CONFIG TRISBbits.RB5
-#define SOLAR_SIGNAL_CONFIG TRISBbits.RB4
-#define SOLAR_POWER PORTBbits.RB5
-#define SOLAR_SIGNAL PORTBbits.RB4
+#define SOLAR_POWER_CONFIG TRISBbits.RB4
+#define SOLAR_SIGNAL_CONFIG TRISAbits.RA2
+#define SOLAR_POWER PORTBbits.RB4
+#define SOLAR_SIGNAL PORTAbits.RA2
+#define BATTERY_THRESHOLD 960
 
 // Battery
-#define BATT_SIGNAL_CONFIG TRISBbits.RB3
-#define BATT_SIGNAL PORTBbits.RB3
+#define BATT_SIGNAL_CONFIG TRISAbits.RA1
+#define BATT_SIGNAL PORTAbits.RA1
 
 ///////////////////////////////////////////////
 ///////////// COMMUNICATION PORT //////////////
@@ -88,8 +78,8 @@
 #define SIM900_TRIGGER_CONFIG TRISCbits.RC5
 #define SIM900_POWER PORTCbits.RC4
 #define SIM900_TRIGGER PORTCbits.RC5
-#define SIM900_RX PORTCbits.RC7
-#define SIM900_TX PORTCbits.RC6
+#define SIM900_RX_CONFIG TRISCbits.RC7
+#define SIM900_TX_CONFIG TRISCbits.RC6
 
 #define PIC_RX2_CONFIG TRISBbits.RB7
 #define PIC_TX2_CONFIG TRISBbits.RB6 //black
@@ -102,26 +92,33 @@
 volatile unsigned char TimeOUT; //Used to store TRUE and FALSE BIT
 volatile unsigned char TEMP_INT, TEMP_DEC, RH_INT, RH_DEC, DIS_INT;
 volatile unsigned char ErrorMSG; //Used to store the Error Message No.
+volatile char message;                                                  //used to store received msg from the computer
 
-volatile char message; //  Used for store received msg from the computer
-    char days=0;
-    char solarcounter = 0;
-    char tempcounter = 0;
-    unsigned char RXdata[60];
-    unsigned char SMS_data[50];
-    unsigned char count = 0; //for testing only
-    unsigned char DayTEMP[7];
-    unsigned char DayHUM[7];
-    unsigned char avgTEMP, avgHUM, minTEMP, maxTEMP, minHUM, maxHUM; //Temperature & Humidity sensor variables
-    unsigned char WaterLevel;
-    unsigned int Conductivity;
+unsigned char WATER_THRESHOLD = 15;
+unsigned char TRANSMIT_FREQ = 3;
+unsigned char CONFIG_FREQ = 15;
 
+unsigned char count = 0; //for testing only
+unsigned char initcheck=1;                                          //used to check if device has been initialised for the first time
+unsigned char days=0;                                               //used to count number of days passed since last transmission
+unsigned char solarcounter = 0;                                     //used to check if solar panel is not responsive
+unsigned char tempcounter = 0;                                      //used to measure temperature and humidity at regular intervals
+unsigned char RXdata[60];                                           //used to store received data from GSM module
+unsigned char SMS_data[50];                                         //used to store data to be transmitted in text message
+unsigned char DayTEMP[7];                                           //used to store temperature values of current day
+unsigned char DayHUM[7];                                            //used to store humidity values of current day
+unsigned char avgTEMP, avgHUM, minTEMP, maxTEMP, minHUM, maxHUM;    //used to store calculated temperature and humidity values
+unsigned char WaterLevel;                                           //used to store the waterlevel sensed by ultrasonic sensor
+unsigned int Conductivity;                                          //used to store the conductivity value from sensor
+unsigned char CheckByte;                                            //used to store the calculated checkbyte to be transmitted in text message
+unsigned int BatteryLevel= 0;                                       //used to store current battery level
+unsigned int SolarLevel = 0;                                        //used to store current solar power level
 /*=========================== FUNCTION PROTOTYPE ===============================
 ==============================================================================*/
 // FUNCTION
 
 void routine();
-void test();
+void demo_test();
 
 // PrintMSG
 extern void show_DHT();
@@ -192,13 +189,23 @@ extern void initSIM900();
 extern void SIM900_SWITCH();
 extern void GSM_ON();
 extern void GSM_OFF();
-extern void sendMessage();
+extern void sendData();
+extern void sendConReq();
+extern unsigned char configReceive();
 extern unsigned char uartReceive(unsigned char data[]);
 extern unsigned char serverReceive(unsigned char data[]);
-extern void SIM900_SEND();
+extern void SIM900_SEND(char type);
 
 // DataCheck
-extern unsigned int getCheckBytes();
+extern void getCheckByte();
+
+//Solar Panel and Battery monitor
+extern void MonitorBattery();
+extern void getBatteryLevel();
+extern void getSolarLevel();
+extern void ChargeBattery();
+extern unsigned char BatteryCharged();
+extern unsigned char SolarStatus();
 
 //To be defined
 extern void getConductivity();

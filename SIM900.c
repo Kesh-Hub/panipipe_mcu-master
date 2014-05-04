@@ -8,7 +8,7 @@ void initUSART1(){
 
 
 /* Send a message to server */
-void sendMessage(){
+void sendData(){
 
     PORTBbits.RB0=1; //for testing only
 
@@ -18,7 +18,7 @@ void sendMessage(){
     delay_1s(1);
     puts1USART("AT+CSCS=\"GSM\"\r\n");
     delay_1s(1);;
-    puts1USART("AT+CMGS=\"+447937946751\"\r\n");        //Server:+447937946751
+    puts1USART("AT+CMGS=\"+447861743881\"\r\n");        //Server:+447937946751
     delay_1s(1);
     putrs1USART(SMS_data);
     Write1USART(26); //send character 26 i.e ctrl-z
@@ -34,7 +34,7 @@ void sendMessage(){
 
 /* Delete all messages in SIM memory*/
 void initSIM900(){
-    putrs1USART("AT+CMGD=1,4\r\n"); //delete all messages in memory
+    putrs1USART("AT+CBAND=\"PGSM_MODE\"\r\n"); //set preferred band to GSM900
     delay_1s(1);
     putrs1USART("AT+CNMI=2,2,0,0\r\n"); //set module to discard messages after retreival
     delay_1s(1);
@@ -56,11 +56,32 @@ unsigned char uartReceive(unsigned char data[]){
 }
 
 unsigned char serverReceive(unsigned char data[]){
-    unsigned char size = sizeof(data)+51;
+    unsigned char size = sizeof(data)+51; //first 51 characters contains time and recipient number
     gets1USART((char*)RXdata,size); //receive upto two characters in text message
     if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
         //perform server commands
         if ((strstr(RXdata,data)!=NULL)){
+            return 1;
+        }
+        else{
+            return 0;
+        }
+    }
+    else{
+        return 0;
+    }
+}
+
+unsigned char configReceive(){
+    unsigned char size = 51+3;
+    gets1USART((char*)RXdata,size); //receive upto three characters in text message
+    if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
+        //perform server commands
+        if ((strstr(RXdata,"§")!=NULL)){ //check for config prefix
+            // change config settings
+            WATER_THRESHOLD = RXdata[52];
+            TRANSMIT_FREQ = RXdata[53];
+            CONFIG_FREQ = RXdata[54];
             return 1;
         }
         else{
@@ -90,7 +111,24 @@ void GSM_OFF(){
     SIM900_POWER = 0;
 }
 
-void SIM900_SEND(){
+void sendConReq(){
+    puts1USART("AT+CMGF=1\r\n");
+    delay_1s(1);
+    puts1USART("AT+CSCS=\"GSM\"\r\n");
+    delay_1s(1);;
+    puts1USART("AT+CMGS=\"+447861743881\"\r\n");        //Server:+447937946751
+    delay_1s(1);
+    putc1USART(CONFIG_PREFIX);
+    Write1USART(26); //send character 26 i.e ctrl-z
+    delay_1s(1);
+
+    // wait for message to be sent
+    Close1USART();
+    delay_1s(1);
+    initUSART1();
+}
+
+void SIM900_SEND(char type){
         SIM900_START:
 
         /* initialise SIM900 and set echo OFF */
@@ -102,16 +140,32 @@ void SIM900_SEND(){
 
         SEND:
         /* send text message*/
-        sendMessage();
-        gets1USART((char*)RXdata,20); //get OK response from SIM900
+        if (type==1){                                           //check if sending data message
+            sendData();                                         //send data message
+        }
+        else{                                                   //else send reconfiguration request message
+            sendConReq();                                       //send config request message
+        }
+        gets1USART((char*)RXdata,20);                           //get OK response from SIM900
 
         /* wait for response from server */
-        if (serverReceive("OK")){ //if acknolegment received
-            SIM900_SWITCH();
-            SIM900_POWER=0; //turn off SIM900
+        if (type==1){
+            if (serverReceive("OK")){                           //if acknolegment received
+                GSM_OFF();                                      //turn off sim900
+            }
+            else{
+                //PORTBbits.RB0 = 1;
+                goto SEND;
+            }
         }
         else{
-            //PORTBbits.RB0 = 1;
-            goto SEND;
+            if (configReceive()){                           //if acknolegment received
+                //change values
+                GSM_OFF();                                  //turn off sim900
+            }
+            else{
+                //PORTBbits.RB0 = 1;
+                goto SEND;
+            }
         }
 }

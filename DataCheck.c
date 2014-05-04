@@ -1,14 +1,34 @@
 #include    "smartpanipipe.h"
+unsigned int rem;
 
-unsigned int sum;
-unsigned int getCheckBytes(){
-    for (char i=1; i<=24;i++){
-        sum+=SMS_data[i];
+void  insertCheckByte(){                //insert check byte in text message
+    if (days==3){
+        SMS_data[25]=CheckByte;
+        SMS_data[26]=DATA_SUFFIX;
     }
-    if (days=4){
-        for (char i=25; i<=32;i++){
-            sum+=SMS_data[i];
+    else if (days==4){
+        SMS_data[33]=CheckByte;
+        SMS_data[34]=DATA_SUFFIX;
+    }
+    else if (days==5){
+        SMS_data[41]=CheckByte;
+        SMS_data[42]=DATA_SUFFIX;
+    }
+}
+
+void getCheckByte(){
+    unsigned int sum=0;
+    for (int z=0; z<23; z++){                        //read until end of memory
+        char temp = ReadMemory(z)-OFFSET;
+        sum+=temp;
+    }
+    if (days==4){
+        for (char z=25; z<=32; z++){
+            char temp = ReadMemory(z)-OFFSET;
+            sum+=temp;
         }
     }
-    return sum;
+    rem=sum%95;                         //ensure checkbyte falls into range of supported characters
+    CheckByte= rem+OFFSET;                          
+    insertCheckByte();
 }

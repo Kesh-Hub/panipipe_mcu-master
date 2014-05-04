@@ -100,9 +100,10 @@ char *makethreestring (int number){
 
 /// Sleeping
 void sleep(){
-   usartTRANSMIT("Sleeping . . .");
-   delay_1ms(10);
-   usartTRANSMIT("Wake Up!");
+   MonitorBattery();                        //check battery level and charge if required
+   for (int t=0; t<120;t++){                //sleep for 2hours
+       delay_1s(60);
+   }
 }
 
 /// Predefined MSG

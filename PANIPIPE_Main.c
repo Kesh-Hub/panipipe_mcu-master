@@ -64,19 +64,19 @@ void initPorts(void)
 
     DHT_Config();
     HCSR_Config();
-    SOLAR_POWER_CONFIG = 1;
-    SOLAR_SIGNAL_CONFIG = 0;
+    SOLAR_POWER_CONFIG = 0;
+    SOLAR_SIGNAL_CONFIG = 1;
 
     COND_SIGNAL_CONFIG = 1;
 
-    BATT_SIGNAL_CONFIG = 0;
+    BATT_SIGNAL_CONFIG = 1;
     //Setting USART PORT
     SIM900_POWER_CONFIG = 0;
     SIM900_TRIGGER_CONFIG = 0;
     SIM900_TRIGGER = 1;
 
-    SIM900_TX = 1;
-    SIM900_RX = 1;
+    SIM900_TX_CONFIG = 1;
+    SIM900_RX_CONFIG = 1;
     //  Configure UART
     Open1USART(USART_TX_INT_OFF & USART_RX_INT_OFF & USART_ASYNCH_MODE & USART_EIGHT_BIT & USART_CONT_RX & USART_BRGH_LOW, 25);
     ANSELC = 0x00;
@@ -100,63 +100,76 @@ void main() {
     initPorts();
     while(1){
         if (count==0){
-            getConductivity();
-            //count++;
+            GSM_ON();
+            delay_1s(20);
+            SIM900_SEND(2);
+            count++;
         }
     }
 }
 
-void test(){
+void demo_test(){
     tempcounter=2;
     char c=0;
-    for (char d=0; d<3; d++){
-        days++;                                         //increment days
-        for (int i=0; i<tempcounter; i++){
-            getTempHum();                               //get temperature and humidity sensor
-            while ((TEMP_INT==0)&&(c<=3)){              //check DHT11 sensor 3 times for reading if no data received
-                getTempHum();                           
-                c++;
+    if(SolarStatus()==1){
+        while (BatteryCharged()){
+            for (char d=0; d<3; d++){
+                days++;                                         //increment days
+                for (int i=0; i<tempcounter; i++){
+                    getTempHum();                               //get temperature and humidity sensor
+                    while ((TEMP_INT==0)&&(c<=3)){              //check DHT11 sensor 3 times for reading if no data received
+                        getTempHum();
+                        c++;
+                    }
+                    DayTEMP[i]=TEMP_INT;
+                    DayHUM[i]=RH_INT;
+                }
+                avgTempHum();                                   //calculate average temperature and humidity
+                minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
+                getWaterLevel();                                //get water level from ultrasonic sensor
+                //getConductivity();
+                ShiftData();                                    //shift gathered data by offset
+                if ((WaterLevel-OFFSET) >= WATER_THRESHOLD){    //check if water level is too low
+                    SMS_data[0]=WARNING_PREFIX;                 //initiate message with warning char
+                    SMS_data[1]=WaterLevel;                     //put water level in text message
+                    SMS_data[2]=DATA_SUFFIX;                    //end message with suffix
+
+                    GSM_ON();                                   //turn on sim900
+                    delay_1s(10);                               //wait for GSM to connect to network
+                    SIM900_SEND(1);                             //Send data message to server
+                    GSM_OFF();                                  //turn off sim900
+                }
+                SaveData();                                     //Sava sensor readings to memory
             }
-            DayTEMP[i]=TEMP_INT;
-            DayHUM[i]=RH_INT;
         }
-        avgTempHum();                                   //calculate average temperature and humidity
-        minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
-        getWaterLevel();                                //get water level from conductivity sensor
-        getConductivity();
-        ShiftData();                                    //shift gathered data by offset
-        if ((WaterLevel-OFFSET) >= WATER_THRESHOLD){    //check if water level is too low
-            SMS_data[0]=WARNING_BIT;                    //initiate message with warning char
-            SMS_data[1]=WaterLevel;                     //put water level in text message
-            SMS_data[2]=STOP_BIT;                       //end message with stop bit
-
-            GSM_ON();                                   //turn on sim900
-            delay_1s(10);                               //wait for GSM to connect to network
-            SIM900_SEND();                              //Send message to server
-            GSM_OFF();                                  //turn off sim900
+        if (!BatteryCharged()){
+            MonitorBattery();
         }
-        SaveData();                                     //Sava sensor readings to memory
     }
-    SMS_data[0]=START_BIT;                              //start message with start bit
+    SMS_data[0]=DATA_PREFIX;                            //start message with prefix
     gatherData();                                       //read data from memory
-    getCheckBytes();
-
-    GSM_ON();                                           //turn on sim900
+    getCheckByte();                                     //calculate check byte
+    //GSM_ON();                                           //turn on sim900
     delay_1s(10);                                       //wait for GSM to connect to network
-    SIM900_SEND();                                      //Send message to server
-    GSM_OFF();                                          //turn off sim900
+    SIM900_SEND(1);                                     //Send data message to server
 }
 
 void routine(){
         START:
-
-        if(SOLAR_SIGNAL == 1){                                      //if solar-panel is on
+        if(SolarStatus()==1){                                       //if solar-panel is on
             solarcounter = 0;
 
-            while (BATT_SIGNAL == 1){                               //while there is power on sensor pins
-
-                while (TEMP_INT==0){
+            while (BatteryCharged()){                               //if battery is charged
+                //TODO: write initcheck to memory so that variable value is not reset
+                if (initcheck ==0){                                 //check if its first initialisation of device
+                    GSM_ON();                                       //turn on GSM module
+                    SIM900_SEND(2);                                 //send a configuration request message to server
+                    initcheck=1;                                    //set initcheck flag
+                }
+                char c=0;
+                while ((TEMP_INT==0)&&(c<=3)){                      //check DHT11 sensor 3 times for reading if no data received
                     getTempHum();
+                    c++;
                 }
                 DayTEMP[tempcounter]=TEMP_INT;
                 DayHUM[tempcounter]=RH_INT;
@@ -165,32 +178,30 @@ void routine(){
                 sleep();                                            //sleep for 2h
 
                 if (tempcounter==2){
-                        getConductivity();
-                        days++;
-                    if (days>=3)
-                        getImage();
-
-                    avgTempHum();                                   //calculare average temperature and humidity
+                    getConductivity();                              //get conductivity value from sensor
+                    days++;                                         //increment days
+                    getImage();                                     //get image from sensor
+                    avgTempHum();                                   //calculate average temperature and humidity
                     minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
-                    getWaterLevel();                                //get water level from conductivity sensor
+                    getWaterLevel();                                //get water level from ultrasonic sensor
 
                     ShiftData();                                    //shift gathered data by offset
                     if ((WaterLevel-OFFSET) >= WATER_THRESHOLD){    //check if water level is too low
-                        SMS_data[0]=WARNING_BIT;                    //initiate message with warning char
+                        SMS_data[0]=WARNING_PREFIX;                 //initiate message with warning char
                         SMS_data[1]=WaterLevel;                     //put water level in text message
-                        SMS_data[2]=STOP_BIT;                       //end message with stop bit
+                        SMS_data[2]=DATA_SUFFIX;                    //end message with suffix
 
                         GSM_ON();                                   //turn on sim900
                         delay_1s(10);                               //wait for GSM to connect to network
-                        SIM900_SEND();                              //Send message to server
-                        GSM_OFF();                                  //turn off sim900
+                        SIM900_SEND(1);                             //Send data message to server
                     }
                 }
             }
-
-            if (SOLAR_SIGNAL == 0)                                  //if solar-panel is off
+            if (!BatteryCharged()){
+                MonitorBattery();
+            }
+            if (SolarStatus()==0)                                  //if solar-panel is off
                 goto OFF;
-            BATT_SIGNAL = 1;
             goto START;
 
         }
@@ -199,21 +210,31 @@ void routine(){
             SaveData();                                             //Sava sensor readings to memory
             tempcounter=0;
 
-            //check if number of days since last transmisssion is 3
-            if (days >=3){
-                transmitData();
+            //check if data transmission frequency is met
+            if (days >= TRANSMIT_FREQ){
+                SMS_data[0]=DATA_PREFIX;                            //start message with prefix
+                gatherData();                                       //read data from memory
+                getCheckByte();                                     //calculate check byte
+                GSM_ON();                                           //turn on sim900
+                delay_1s(10);                                       //wait for GSM to connect to network
+                SIM900_SEND(1);                                     //Send data message to server
                 days=0;
             } //reset days counter only after successful tranmsission
 
-            while (SOLAR_SIGNAL == 0) //if solar-panel is off
-                delay_1s(5);
+            //sleep for 6h
+            for (char z=0; z<3; z++){
+                sleep();
+            }
 
-            solarcounter++;
-            if (solarcounter > SOLAR_THRESHOLD){
-                    usartTRANSMIT("Solar Threshold");
-                    delay_1s(5);
-                    solarcounter=0;
-                    goto START;
+            while (SolarStatus()==2){ //if solar-panel is off
+                for (char z=0; z<5; z++){
+                    delay_1s(60);
+                }
+                solarcounter++;
+                if (solarcounter > SOLAR_THRESHOLD){
+                        //turn on Fault LED
+                        goto START;
+                }
             }
         }
 

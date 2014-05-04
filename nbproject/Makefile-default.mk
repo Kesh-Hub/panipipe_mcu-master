@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=DHT11.c HCSR04.c ISR.c PANIPIPE_Main.c USART.c General.c Memory.c Conductivity.c Image.c SIM900.c DataCheck.c
+SOURCEFILES_QUOTED_IF_SPACED=DHT11.c HCSR04.c ISR.c PANIPIPE_Main.c USART.c General.c Memory.c Conductivity.c Image.c SIM900.c DataCheck.c Battery.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/DHT11.p1 ${OBJECTDIR}/HCSR04.p1 ${OBJECTDIR}/ISR.p1 ${OBJECTDIR}/PANIPIPE_Main.p1 ${OBJECTDIR}/USART.p1 ${OBJECTDIR}/General.p1 ${OBJECTDIR}/Memory.p1 ${OBJECTDIR}/Conductivity.p1 ${OBJECTDIR}/Image.p1 ${OBJECTDIR}/SIM900.p1 ${OBJECTDIR}/DataCheck.p1
-POSSIBLE_DEPFILES=${OBJECTDIR}/DHT11.p1.d ${OBJECTDIR}/HCSR04.p1.d ${OBJECTDIR}/ISR.p1.d ${OBJECTDIR}/PANIPIPE_Main.p1.d ${OBJECTDIR}/USART.p1.d ${OBJECTDIR}/General.p1.d ${OBJECTDIR}/Memory.p1.d ${OBJECTDIR}/Conductivity.p1.d ${OBJECTDIR}/Image.p1.d ${OBJECTDIR}/SIM900.p1.d ${OBJECTDIR}/DataCheck.p1.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/DHT11.p1 ${OBJECTDIR}/HCSR04.p1 ${OBJECTDIR}/ISR.p1 ${OBJECTDIR}/PANIPIPE_Main.p1 ${OBJECTDIR}/USART.p1 ${OBJECTDIR}/General.p1 ${OBJECTDIR}/Memory.p1 ${OBJECTDIR}/Conductivity.p1 ${OBJECTDIR}/Image.p1 ${OBJECTDIR}/SIM900.p1 ${OBJECTDIR}/DataCheck.p1 ${OBJECTDIR}/Battery.p1
+POSSIBLE_DEPFILES=${OBJECTDIR}/DHT11.p1.d ${OBJECTDIR}/HCSR04.p1.d ${OBJECTDIR}/ISR.p1.d ${OBJECTDIR}/PANIPIPE_Main.p1.d ${OBJECTDIR}/USART.p1.d ${OBJECTDIR}/General.p1.d ${OBJECTDIR}/Memory.p1.d ${OBJECTDIR}/Conductivity.p1.d ${OBJECTDIR}/Image.p1.d ${OBJECTDIR}/SIM900.p1.d ${OBJECTDIR}/DataCheck.p1.d ${OBJECTDIR}/Battery.p1.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/DHT11.p1 ${OBJECTDIR}/HCSR04.p1 ${OBJECTDIR}/ISR.p1 ${OBJECTDIR}/PANIPIPE_Main.p1 ${OBJECTDIR}/USART.p1 ${OBJECTDIR}/General.p1 ${OBJECTDIR}/Memory.p1 ${OBJECTDIR}/Conductivity.p1 ${OBJECTDIR}/Image.p1 ${OBJECTDIR}/SIM900.p1 ${OBJECTDIR}/DataCheck.p1
+OBJECTFILES=${OBJECTDIR}/DHT11.p1 ${OBJECTDIR}/HCSR04.p1 ${OBJECTDIR}/ISR.p1 ${OBJECTDIR}/PANIPIPE_Main.p1 ${OBJECTDIR}/USART.p1 ${OBJECTDIR}/General.p1 ${OBJECTDIR}/Memory.p1 ${OBJECTDIR}/Conductivity.p1 ${OBJECTDIR}/Image.p1 ${OBJECTDIR}/SIM900.p1 ${OBJECTDIR}/DataCheck.p1 ${OBJECTDIR}/Battery.p1
 
 # Source Files
-SOURCEFILES=DHT11.c HCSR04.c ISR.c PANIPIPE_Main.c USART.c General.c Memory.c Conductivity.c Image.c SIM900.c DataCheck.c
+SOURCEFILES=DHT11.c HCSR04.c ISR.c PANIPIPE_Main.c USART.c General.c Memory.c Conductivity.c Image.c SIM900.c DataCheck.c Battery.c
 
 
 CFLAGS=
@@ -166,6 +166,14 @@ ${OBJECTDIR}/DataCheck.p1: DataCheck.c  nbproject/Makefile-${CND_CONF}.mk
 	@-${MV} ${OBJECTDIR}/DataCheck.d ${OBJECTDIR}/DataCheck.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/DataCheck.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
+${OBJECTDIR}/Battery.p1: Battery.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Battery.p1.d 
+	@${RM} ${OBJECTDIR}/Battery.p1 
+	${MP_CC} --pass1 $(MP_EXTRA_CC_PRE) --chip=$(MP_PROCESSOR_OPTION) -Q -G  -D__DEBUG=1 --debugger=pickit3  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,-debug --addrqual=ignore --mode=free -P -N255 --warn=0 --asmlist --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,+plib --output=-mcof,+elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%%f:%%l: error: (%%n) %%s" "--warnformat=%%f:%%l: warning: (%%n) %%s" "--msgformat=%%f:%%l: advisory: (%%n) %%s"    -o${OBJECTDIR}/Battery.p1  Battery.c 
+	@-${MV} ${OBJECTDIR}/Battery.d ${OBJECTDIR}/Battery.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/Battery.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
 else
 ${OBJECTDIR}/DHT11.p1: DHT11.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} ${OBJECTDIR} 
@@ -254,6 +262,14 @@ ${OBJECTDIR}/DataCheck.p1: DataCheck.c  nbproject/Makefile-${CND_CONF}.mk
 	${MP_CC} --pass1 $(MP_EXTRA_CC_PRE) --chip=$(MP_PROCESSOR_OPTION) -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,-debug --addrqual=ignore --mode=free -P -N255 --warn=0 --asmlist --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,+plib --output=-mcof,+elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%%f:%%l: error: (%%n) %%s" "--warnformat=%%f:%%l: warning: (%%n) %%s" "--msgformat=%%f:%%l: advisory: (%%n) %%s"    -o${OBJECTDIR}/DataCheck.p1  DataCheck.c 
 	@-${MV} ${OBJECTDIR}/DataCheck.d ${OBJECTDIR}/DataCheck.p1.d 
 	@${FIXDEPS} ${OBJECTDIR}/DataCheck.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
+	
+${OBJECTDIR}/Battery.p1: Battery.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} ${OBJECTDIR} 
+	@${RM} ${OBJECTDIR}/Battery.p1.d 
+	@${RM} ${OBJECTDIR}/Battery.p1 
+	${MP_CC} --pass1 $(MP_EXTRA_CC_PRE) --chip=$(MP_PROCESSOR_OPTION) -Q -G  --double=24 --float=24 --emi=wordwrite --opt=default,+asm,+asmfile,-speed,+space,-debug --addrqual=ignore --mode=free -P -N255 --warn=0 --asmlist --summary=default,-psect,-class,+mem,-hex,-file --output=default,-inhx032 --runtime=default,+clear,+init,-keep,-no_startup,-download,+config,+clib,+plib --output=-mcof,+elf:multilocs --stack=compiled:auto:auto:auto "--errformat=%%f:%%l: error: (%%n) %%s" "--warnformat=%%f:%%l: warning: (%%n) %%s" "--msgformat=%%f:%%l: advisory: (%%n) %%s"    -o${OBJECTDIR}/Battery.p1  Battery.c 
+	@-${MV} ${OBJECTDIR}/Battery.d ${OBJECTDIR}/Battery.p1.d 
+	@${FIXDEPS} ${OBJECTDIR}/Battery.p1.d $(SILENT) -rsi ${MP_CC_DIR}../  
 	
 endif
 

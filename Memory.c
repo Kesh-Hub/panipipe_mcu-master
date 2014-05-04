@@ -16,6 +16,7 @@ void ShiftData(){
     minHUM = (char)minHUM+OFFSET;
     maxHUM = (char)maxHUM+OFFSET;
     WaterLevel = (char)WaterLevel+OFFSET;
+    Conductivity = (char)WaterLevel+OFFSET;
 }
 
 void SaveData(){
@@ -60,6 +61,16 @@ void SaveData(){
         WriteMemory(30,(char)WaterLevel);
         WriteMemory(31,(char)Conductivity);
     }
+    else if (days==5){
+        WriteMemory(32,(char)avgTEMP);
+        WriteMemory(33,(char)avgHUM);
+        WriteMemory(34,(char)minTEMP);
+        WriteMemory(35,(char)maxTEMP);
+        WriteMemory(36,(char)minHUM);
+        WriteMemory(37,(char)maxHUM);
+        WriteMemory(38,(char)WaterLevel);
+        WriteMemory(39,(char)Conductivity);
+    }
 
 }
 
@@ -68,11 +79,26 @@ void gatherData(){
     for (char j=0; j<=23; j++){ //read first 17-bytes
         SMS_data[j+1]=ReadMemory(j);
     }
-    SMS_data[25]=STOP_BIT;
     if (days==4){
         for (char j=24; j<=31; j++){ //read memory address 23 to 30 (reserved for day four data)
             SMS_data[j+1]=ReadMemory(j);
         }
-        SMS_data[33]=STOP_BIT;
     }
+    if (days==5){
+        for (char j=24; j<=39; j++){ //read memory address 23 to 39 (day 4 and day 5 data)
+            SMS_data[j+1]=ReadMemory(j);
+        }
+    }
+}
+
+void SaveConfig(){
+    WriteMemory(50,(char)WATER_THRESHOLD);
+    WriteMemory(51,(char)TRANSMIT_FREQ);
+    WriteMemory(52,(char)CONFIG_FREQ);
+}
+
+void ReadConfig(){
+    WATER_THRESHOLD=ReadMemory(50);
+    TRANSMIT_FREQ=ReadMemory(51);
+    CONFIG_FREQ=ReadMemory(52);
 }
