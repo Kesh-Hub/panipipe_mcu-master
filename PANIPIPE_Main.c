@@ -68,6 +68,7 @@ void initPorts(void)
     SOLAR_SIGNAL_CONFIG = 1;
 
     COND_SIGNAL_CONFIG = 1;
+    COND_POWER_CONFIG =0;
 
     BATT_SIGNAL_CONFIG = 1;
     //Setting USART PORT
@@ -100,10 +101,9 @@ void main() {
     initPorts();
     while(1){
         if (count==0){
-            GSM_ON();
-            delay_1s(20);
-            SIM900_SEND(2);
-            count++;
+            GSM_OFF();
+            demo_test();
+            count=1;
         }
     }
 }
@@ -112,7 +112,7 @@ void demo_test(){
     tempcounter=2;
     char c=0;
     if(SolarStatus()==1){
-        while (BatteryCharged()){
+        if (BatteryCharged()){
             for (char d=0; d<3; d++){
                 days++;                                         //increment days
                 for (int i=0; i<tempcounter; i++){
@@ -127,7 +127,7 @@ void demo_test(){
                 avgTempHum();                                   //calculate average temperature and humidity
                 minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
                 getWaterLevel();                                //get water level from ultrasonic sensor
-                //getConductivity();
+                getConductivity();
                 ShiftData();                                    //shift gathered data by offset
                 if ((WaterLevel-OFFSET) >= WATER_THRESHOLD){    //check if water level is too low
                     SMS_data[0]=WARNING_PREFIX;                 //initiate message with warning char
@@ -149,8 +149,10 @@ void demo_test(){
     SMS_data[0]=DATA_PREFIX;                            //start message with prefix
     gatherData();                                       //read data from memory
     getCheckByte();                                     //calculate check byte
-    //GSM_ON();                                           //turn on sim900
+    GSM_ON();                                           //turn on sim900
     delay_1s(10);                                       //wait for GSM to connect to network
+    puts1USART("AT\r\n");
+    delay_1s(5);
     SIM900_SEND(1);                                     //Send data message to server
 }
 

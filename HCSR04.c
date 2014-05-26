@@ -37,7 +37,7 @@ int HCSR_Time(){
 
 int HCSR_Distance(int time){
     int distance;
-    distance = time * 0.034f; //in cm //need to change accordingly (340/2)/10000 in CM *0.8
+    distance = (time * 0.0333f)+1f; //in cm //need to change accordingly (340/2)/10000 in CM *0.8
     return distance;
 }
 

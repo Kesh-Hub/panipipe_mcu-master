@@ -7,7 +7,8 @@ void configure_ADC(){
 
 unsigned int get_ADC_value(void){
     unsigned int max;
-
+    COND_POWER=1;
+    delay_1s(2);
     ConvertADC();                               // start conversion
     while(BusyADC());                           //wait while conversion takes place
 
@@ -21,17 +22,16 @@ unsigned int get_ADC_value(void){
         }
         delay_1us(1);
     }
+    COND_POWER=0;
     return max;
 }
 
 void getConductivity(){
-    float y;                           // variable for delay adc scaling
-    unsigned int k;                             // variable for scaled delay value
-    float m = 0.003;                   // cell constant
-    float c = 2.7;                     // y-intercept
+    float scaled_value;                                             // variable for delay adc scaling
+    unsigned int peak_value;                                        // variable for scaled delay value
 
-    configure_ADC();                            // function call to configure adc
-    k= get_ADC_value();                         // gets 10 bit adc value
-    y = (float) k*(float) (4.73f/1023f);        // adc scaled value now scaled and ready
-    Conductivity = (y - c)/m;                   // calculate conductivity value
+    configure_ADC();                                                // function call to configure adc
+    peak_value = get_ADC_value();                                   // gets 10 bit adc value
+    scaled_value = (float) peak_value*(float) (4.73f/1023f);        // adc scaled value now scaled and ready
+    Conductivity = (scaled_value - Y_INTERCEPT)/CELL_CONSTANT;      // calculate conductivity value
 }

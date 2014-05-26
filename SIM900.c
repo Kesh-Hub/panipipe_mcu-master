@@ -9,9 +9,6 @@ void initUSART1(){
 
 /* Send a message to server */
 void sendData(){
-
-    PORTBbits.RB0=1; //for testing only
-
     puts1USART("AT\r\n");
     delay_1s(1);
     puts1USART("AT+CMGF=1\r\n");
@@ -23,9 +20,6 @@ void sendData(){
     putrs1USART(SMS_data);
     Write1USART(26); //send character 26 i.e ctrl-z
     delay_1s(1);
-
-    PORTBbits.RB0=0; //for testing only
-
     // wait for message to be sent
     Close1USART();
     delay_1s(1);
@@ -34,6 +28,7 @@ void sendData(){
 
 /* Delete all messages in SIM memory*/
 void initSIM900(){
+    delay_1s(1);
     putrs1USART("AT+CBAND=\"PGSM_MODE\"\r\n"); //set preferred band to GSM900
     delay_1s(1);
     putrs1USART("AT+CNMI=2,2,0,0\r\n"); //set module to discard messages after retreival
@@ -58,13 +53,15 @@ unsigned char uartReceive(unsigned char data[]){
 unsigned char serverReceive(unsigned char data[]){
     unsigned char size = sizeof(data)+51; //first 51 characters contains time and recipient number
     gets1USART((char*)RXdata,size); //receive upto two characters in text message
-    if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
-        //perform server commands
-        if ((strstr(RXdata,data)!=NULL)){
-            return 1;
-        }
-        else{
-            return 0;
+    if (strstr(RXdata, DATA_PREFIX)){
+        if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
+            //perform server commands
+            if ((strstr(RXdata,data)!=NULL)){
+                return 1;
+            }
+            else{
+                return 0;
+            }
         }
     }
     else{
@@ -79,9 +76,9 @@ unsigned char configReceive(){
         //perform server commands
         if ((strstr(RXdata,"§")!=NULL)){ //check for config prefix
             // change config settings
-            WATER_THRESHOLD = RXdata[52];
-            TRANSMIT_FREQ = RXdata[53];
-            CONFIG_FREQ = RXdata[54];
+            WATER_THRESHOLD = RXdata[51] - OFFSET;
+            TRANSMIT_FREQ = RXdata[52] - OFFSET;
+            CONFIG_FREQ = RXdata[53] - OFFSET;
             return 1;
         }
         else{
@@ -132,10 +129,11 @@ void SIM900_SEND(char type){
         SIM900_START:
 
         /* initialise SIM900 and set echo OFF */
-        putrs1USART("ATE0\r\n");
-        if (!uartReceive("OK")){
-            goto SIM900_START;
-        }
+        puts1USART("ATE0\r\n");
+        delay_1s(1);
+//        if (!uartReceive("OK")){
+//            goto SIM900_START;
+//        }
         initSIM900();
 
         SEND:
@@ -154,17 +152,15 @@ void SIM900_SEND(char type){
                 GSM_OFF();                                      //turn off sim900
             }
             else{
-                //PORTBbits.RB0 = 1;
                 goto SEND;
             }
         }
         else{
-            if (configReceive()){                           //if acknolegment received
-                //change values
-                GSM_OFF();                                  //turn off sim900
+            if (configReceive()){                               //if acknolegment received
+
+                GSM_OFF();                                      //turn off sim900
             }
             else{
-                //PORTBbits.RB0 = 1;
                 goto SEND;
             }
         }

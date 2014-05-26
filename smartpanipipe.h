@@ -30,6 +30,8 @@
 #define _XTAL_FREQ 16000000
 #define SOLAR_THRESHOLD 15
 #define SOLAR_OFFSET 10
+#define CELL_CONSTANT 0.003
+#define Y_INTERCEPT 2.7
 #define OFFSET (char)32
 #define DATA_PREFIX (char)163
 #define DATA_SUFFIX (char)164
@@ -55,7 +57,8 @@
 // Conductivity
 #define COND_SIGNAL_CONFIG TRISAbits.RA0
 #define COND_SIGNAL PORTAbits.RA0
-
+#define COND_POWER_CONFIG TRISBbits.RB0
+#define COND_POWER PORTBbits.RB0
 
 ///////////////////////////////////////
 /////// SOLAR PANEL AND BATTERY  ////////
@@ -94,7 +97,7 @@ volatile unsigned char TEMP_INT, TEMP_DEC, RH_INT, RH_DEC, DIS_INT;
 volatile unsigned char ErrorMSG; //Used to store the Error Message No.
 volatile char message;                                                  //used to store received msg from the computer
 
-unsigned char WATER_THRESHOLD = 15;
+unsigned char WATER_THRESHOLD = 20;
 unsigned char TRANSMIT_FREQ = 3;
 unsigned char CONFIG_FREQ = 15;
 
