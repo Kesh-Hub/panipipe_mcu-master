@@ -57,8 +57,8 @@
 // Conductivity
 #define COND_SIGNAL_CONFIG TRISAbits.RA0
 #define COND_SIGNAL PORTAbits.RA0
-#define COND_POWER_CONFIG TRISBbits.RB0
-#define COND_POWER PORTBbits.RB0
+#define COND_POWER_CONFIG TRISCbits.RC2
+#define COND_POWER PORTCbits.RC2
 
 ///////////////////////////////////////
 /////// SOLAR PANEL AND BATTERY  ////////
@@ -68,7 +68,7 @@
 #define SOLAR_SIGNAL_CONFIG TRISAbits.RA2
 #define SOLAR_POWER PORTBbits.RB4
 #define SOLAR_SIGNAL PORTAbits.RA2
-#define BATTERY_THRESHOLD 960
+#define BATTERY_THRESHOLD 500
 
 // Battery
 #define BATT_SIGNAL_CONFIG TRISAbits.RA1

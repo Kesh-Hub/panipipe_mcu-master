@@ -100,16 +100,25 @@ unsigned char DHT_Reading(){
     }
 }
 
+//void getTempHum(){
+//    DHT11_POWER = 1;
+//    delay_1s(1);
+//    ErrorMSG = DHT_Reading();
+//    delay_100ms(5);
+//    DHT11_POWER = 0;
+////    if(!ErrorMSG)
+////        show_DHT();
+////    else
+////        show_DHTError(ErrorMSG);;
+//}
+
 void getTempHum(){
-    DHT11_POWER = 1;
-    delay_1s(1);
-    ErrorMSG = DHT_Reading();
-    delay_100ms(5);
-    DHT11_POWER = 0;
-//    if(!ErrorMSG)
-//        show_DHT();
-//    else
-//        show_DHTError(ErrorMSG);;
+    DayTEMP[0]=24;
+    DayTEMP[1]=24;
+    DayTEMP[2]=23;
+    DayHUM[0]=43;
+    DayHUM[1]=44;
+    DayHUM[2]=43;
 }
 
 void avgTempHum(){

@@ -9,13 +9,18 @@ void initUSART1(){
 
 /* Send a message to server */
 void sendData(){
+    /****temp fix****/
+    Close1USART();
+    delay_1s(1);
+    initUSART1();
+    delay_1s(10);
     puts1USART("AT\r\n");
     delay_1s(1);
     puts1USART("AT+CMGF=1\r\n");
     delay_1s(1);
     puts1USART("AT+CSCS=\"GSM\"\r\n");
     delay_1s(1);;
-    puts1USART("AT+CMGS=\"+447861743881\"\r\n");        //Server:+447937946751
+    puts1USART("AT+CMGS=\"+447937946751\"\r\n");        //Server:+447937946751
     delay_1s(1);
     putrs1USART(SMS_data);
     Write1USART(26); //send character 26 i.e ctrl-z
@@ -54,7 +59,7 @@ unsigned char serverReceive(unsigned char data[]){
     unsigned char size = sizeof(data)+51; //first 51 characters contains time and recipient number
     gets1USART((char*)RXdata,size); //receive upto two characters in text message
     if (strstr(RXdata, DATA_PREFIX)){
-        if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
+        if (strstr(RXdata,"+447937946751")!=NULL){ //Server: +447937946751
             //perform server commands
             if ((strstr(RXdata,data)!=NULL)){
                 return 1;
@@ -72,7 +77,7 @@ unsigned char serverReceive(unsigned char data[]){
 unsigned char configReceive(){
     unsigned char size = 51+3;
     gets1USART((char*)RXdata,size); //receive upto three characters in text message
-    if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
+    if (strstr(RXdata,"+447937946751")!=NULL){ //Server: +447937946751
         //perform server commands
         if ((strstr(RXdata,"§")!=NULL)){ //check for config prefix
             // change config settings
@@ -113,7 +118,7 @@ void sendConReq(){
     delay_1s(1);
     puts1USART("AT+CSCS=\"GSM\"\r\n");
     delay_1s(1);;
-    puts1USART("AT+CMGS=\"+447861743881\"\r\n");        //Server:+447937946751
+    puts1USART("AT+CMGS=\"+447937946751\"\r\n");        //Server:+447937946751
     delay_1s(1);
     putc1USART(CONFIG_PREFIX);
     Write1USART(26); //send character 26 i.e ctrl-z

@@ -22,7 +22,8 @@ unsigned int get_ADC_value(void){
         }
         delay_1us(1);
     }
-    COND_POWER=0;
+    //COND_POWER=0;
+    delay_1s(2);
     return max;
 }
 

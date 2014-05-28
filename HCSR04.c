@@ -54,15 +54,15 @@ char HCSR_Reading(){
 void getWaterLevel(){
     unsigned char WLevel[3];
     unsigned int sum=0;
+    HCSR04_POWER = 1;
+    delay_1s(1);
     for (char i=0; i<3; i++){
-        HCSR04_POWER = 1;
-        delay_1s(1);
         ErrorMSG = HCSR_Reading();
         delay_100ms(5);
-        HCSR04_POWER = 0;
         WLevel[i]=DIS_INT;
-        delay_1s(3);
     }
+    HCSR04_POWER = 0;
+    delay_1s(3);
     for (char j=0; j<3; j++){
         sum+=WLevel[j];
     }

@@ -101,9 +101,8 @@ void main() {
     initPorts();
     while(1){
         if (count==0){
-            GSM_OFF();
             demo_test();
-            count=1;
+            //count++;
         }
     }
 }
@@ -111,19 +110,20 @@ void main() {
 void demo_test(){
     tempcounter=2;
     char c=0;
-    if(SolarStatus()==1){
-        if (BatteryCharged()){
+//    if(SolarStatus()==1){
+//        if (BatteryCharged()){
             for (char d=0; d<3; d++){
                 days++;                                         //increment days
-                for (int i=0; i<tempcounter; i++){
-                    getTempHum();                               //get temperature and humidity sensor
-                    while ((TEMP_INT==0)&&(c<=3)){              //check DHT11 sensor 3 times for reading if no data received
-                        getTempHum();
-                        c++;
-                    }
-                    DayTEMP[i]=TEMP_INT;
-                    DayHUM[i]=RH_INT;
-                }
+//                for (int i=0; i<tempcounter; i++){
+//                    getTempHum();                               //get temperature and humidity sensor
+//                    while ((TEMP_INT==0)&&(c<=3)){              //check DHT11 sensor 3 times for reading if no data received
+//                        getTempHum();
+//                        c++;
+//                    }
+//                    DayTEMP[i]=TEMP_INT;
+//                    DayHUM[i]=RH_INT;
+//                }
+                getTempHum(); //temporary
                 avgTempHum();                                   //calculate average temperature and humidity
                 minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
                 getWaterLevel();                                //get water level from ultrasonic sensor
@@ -141,11 +141,11 @@ void demo_test(){
                 }
                 SaveData();                                     //Sava sensor readings to memory
             }
-        }
+//        }
         if (!BatteryCharged()){
             MonitorBattery();
         }
-    }
+//    }
     SMS_data[0]=DATA_PREFIX;                            //start message with prefix
     gatherData();                                       //read data from memory
     getCheckByte();                                     //calculate check byte
