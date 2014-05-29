@@ -56,9 +56,9 @@ unsigned char uartReceive(unsigned char data[]){
 }
 
 unsigned char serverReceive(unsigned char data[]){
-    unsigned char size = sizeof(data)+51; //first 51 characters contains time and recipient number
+    unsigned char size = sizeof(data)+52; //first 51 characters contains time and recipient number
     gets1USART((char*)RXdata,size); //receive upto two characters in text message
-    if (strstr(RXdata, DATA_PREFIX)){
+    if (strstr(RXdata, "£")){
         if (strstr(RXdata,"+447937946751")!=NULL){ //Server: +447937946751
             //perform server commands
             if ((strstr(RXdata,data)!=NULL)){

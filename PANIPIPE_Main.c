@@ -101,8 +101,12 @@ void main() {
     initPorts();
     while(1){
         if (count==0){
-            demo_test();
-            //count++;
+            GSM_OFF();
+            delay_1s(5);
+            GSM_ON();
+            SIM900_SEND(1);
+            delay_1s(10);
+            count++;
         }
     }
 }
