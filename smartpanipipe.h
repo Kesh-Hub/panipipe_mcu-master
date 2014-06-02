@@ -30,8 +30,8 @@
 #define _XTAL_FREQ 16000000
 #define SOLAR_THRESHOLD 15
 #define SOLAR_OFFSET 10
-#define CELL_CONSTANT 0.003
-#define Y_INTERCEPT 2.7
+#define CELL_CONSTANT 0.025
+#define Y_INTERCEPT 0.1095
 #define OFFSET (char)32
 #define DATA_PREFIX (char)163
 #define DATA_SUFFIX (char)164
@@ -100,13 +100,13 @@ volatile char message;                                                  //used t
 unsigned char WATER_THRESHOLD = 20;
 unsigned char TRANSMIT_FREQ = 3;
 unsigned char CONFIG_FREQ = 15;
+unsigned char INIT_CHECK=1;                                          //used to check if device has been initialised for the first time
 
 unsigned char count = 0; //for testing only
-unsigned char initcheck=1;                                          //used to check if device has been initialised for the first time
 unsigned char days=0;                                               //used to count number of days passed since last transmission
 unsigned char solarcounter = 0;                                     //used to check if solar panel is not responsive
 unsigned char tempcounter = 0;                                      //used to measure temperature and humidity at regular intervals
-unsigned char RXdata[60];                                           //used to store received data from GSM module
+unsigned char RXdata[100];                                           //used to store received data from GSM module
 unsigned char SMS_data[50];                                         //used to store data to be transmitted in text message
 unsigned char DayTEMP[7];                                           //used to store temperature values of current day
 unsigned char DayHUM[7];                                            //used to store humidity values of current day
@@ -152,11 +152,13 @@ extern char *makethreestring (int number);
 extern void sleep(); //timer to keep device in sleep mode
 
 //MEMORY
-extern char ReadMemory(char addr);
+extern unsigned char ReadMemory(char addr);
 extern void WriteMemory(char addr, char data);
 extern void SaveData();
 extern void gatherData();
 extern void ShiftData();
+extern void SetInitFlag();
+extern unsigned char ReadInitFlag();
 
 //ISR
 extern void INTERRUPT_Config();

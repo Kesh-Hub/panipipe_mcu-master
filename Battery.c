@@ -35,9 +35,9 @@ void ChargeBattery(){
     int count1=0;
     while((SolarLevel-SOLAR_OFFSET) > BatteryLevel){
         SOLAR_POWER=1;              //Turn on Charge circuit.
-        delay_1s(2);                //wait for 10mins
+        delay_1s(5);                //wait for 10mins
         getSolarLevel();
-        if (count1>12){             //if battery is being charged for more than 2hours
+        if (count1>12){             //if battery is being charged for more than 2hours (60s)
             SOLAR_POWER=0;
             return;
         }
@@ -48,7 +48,7 @@ void ChargeBattery(){
 
 unsigned char BatteryCharged(){
     getBatteryLevel();
-    if (BatteryLevel > 415){ //if battery level >5V
+    if (BatteryLevel > 430){ //if battery level >5V
         return 1;
     }
     else{
@@ -61,9 +61,9 @@ unsigned char SolarStatus(){
     if (SolarLevel == 0){ //if there is no signal
         return 0;
     }
-    else if (SolarLevel < 248){ //if its evening - 3V
-        return 0;
-    }
+//    else if (SolarLevel < 248){ //if its evening - 3V
+//        return 0;
+//    }
     else{  //if its morning
         return 1;
     }

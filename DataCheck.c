@@ -18,12 +18,18 @@ void  insertCheckByte(){                //insert check byte in text message
 
 void getCheckByte(){
     unsigned int sum=0;
-    for (int z=0; z<23; z++){                        //read until end of memory
+    for (int z=0; z<=23; z++){                        //read until end of memory
         char temp = ReadMemory(z)-OFFSET;
         sum+=temp;
     }
     if (days==4){
-        for (char z=25; z<=32; z++){
+        for (char z=24; z<=31; z++){
+            char temp = ReadMemory(z)-OFFSET;
+            sum+=temp;
+        }
+    }
+    if (days==5){
+        for (char z=32; z<=39; z++){
             char temp = ReadMemory(z)-OFFSET;
             sum+=temp;
         }

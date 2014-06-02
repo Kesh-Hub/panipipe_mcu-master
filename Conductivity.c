@@ -23,16 +23,18 @@ unsigned int get_ADC_value(void){
         delay_1us(1);
     }
     COND_POWER=0;
-    delay_1s(2);
+    delay_1ms(50);
     return max;
 }
 
 void getConductivity(){
     float scaled_value;                                             // variable for delay adc scaling
     unsigned int peak_value;                                        // variable for scaled delay value
+    float net_voltage;                                     // variable for net voltage
 
     configure_ADC();                                                // function call to configure adc
     peak_value = get_ADC_value();                                   // gets 10 bit adc value
-    scaled_value = (float) peak_value*(float) (4.73f/1023f);        // adc scaled value now scaled and ready
-    Conductivity = (scaled_value - Y_INTERCEPT)/CELL_CONSTANT;      // calculate conductivity value
+    scaled_value = (float) peak_value*(float) (5.08f/1023f);        // adc scaled value now scaled and ready
+    net_voltage = (scaled_value - 2.46);
+    Conductivity = CELL_CONSTANT*100/(net_voltage - Y_INTERCEPT);       // calculate conductivity value
 }

@@ -62,6 +62,8 @@ void initPorts(void)
     OSCCON = 0b01110010;                   // internal oscillator, 16MHz
     OSCTUNEbits.TUN=011111;
 
+    WriteMemory(53,0); //set init flag to null (first initialisation)
+
     DHT_Config();
     HCSR_Config();
     SOLAR_POWER_CONFIG = 0;
@@ -100,34 +102,33 @@ void initPorts(void)
 void main() {
     initPorts();
     while(1){
-        if (count==0){
-            GSM_OFF();
-            delay_1s(5);
-            GSM_ON();
-            SIM900_SEND(1);
-            delay_1s(10);
-            count++;
-        }
+        demo_test();
+        sleep();
     }
 }
 
 void demo_test(){
     tempcounter=2;
     char c=0;
-//    if(SolarStatus()==1){
-//        if (BatteryCharged()){
-            for (char d=0; d<3; d++){
+    //if(SolarStatus()==1){
+        if (BatteryCharged()){
+            if (ReadInitFlag()==0){                             //check if its first initialisation of device
+                GSM_ON();                                       //turn on GSM module
+                SIM900_SEND(2);                                 //send a configuration request message to server
+                SetInitFlag();                                  //set initcheck flag
+            }
+            for (char d=0; d<TRANSMIT_FREQ; d++){
                 days++;                                         //increment days
-//                for (int i=0; i<tempcounter; i++){
-//                    getTempHum();                               //get temperature and humidity sensor
-//                    while ((TEMP_INT==0)&&(c<=3)){              //check DHT11 sensor 3 times for reading if no data received
-//                        getTempHum();
-//                        c++;
-//                    }
-//                    DayTEMP[i]=TEMP_INT;
-//                    DayHUM[i]=RH_INT;
-//                }
-                getTempHum(); //temporary
+                for (int i=0; i<tempcounter; i++){
+                    getTempHum();                               //get temperature and humidity sensor
+                    while ((TEMP_INT==0)&&(c<=3)){              //check DHT11 sensor 3 times for reading if no data received
+                        getTempHum();
+                        c++;
+                    }
+                    DayTEMP[i]=TEMP_INT;
+                    DayHUM[i]=RH_INT;
+                    delay_1s(30);                               //wait 30 seconds between each temperature readings
+                }
                 avgTempHum();                                   //calculate average temperature and humidity
                 minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
                 getWaterLevel();                                //get water level from ultrasonic sensor
@@ -139,17 +140,16 @@ void demo_test(){
                     SMS_data[2]=DATA_SUFFIX;                    //end message with suffix
 
                     GSM_ON();                                   //turn on sim900
-                    delay_1s(10);                               //wait for GSM to connect to network
+                    delay_1s(5);                               //wait for GSM to connect to network
                     SIM900_SEND(1);                             //Send data message to server
                     GSM_OFF();                                  //turn off sim900
                 }
                 SaveData();                                     //Sava sensor readings to memory
             }
-//        }
+        }
         if (!BatteryCharged()){
             MonitorBattery();
         }
-//    }
     SMS_data[0]=DATA_PREFIX;                            //start message with prefix
     gatherData();                                       //read data from memory
     getCheckByte();                                     //calculate check byte
@@ -158,7 +158,9 @@ void demo_test(){
     puts1USART("AT\r\n");
     delay_1s(5);
     SIM900_SEND(1);                                     //Send data message to server
+   //} //solarpanel check
 }
+
 
 void routine(){
         START:
@@ -166,11 +168,10 @@ void routine(){
             solarcounter = 0;
 
             while (BatteryCharged()){                               //if battery is charged
-                //TODO: write initcheck to memory so that variable value is not reset
-                if (initcheck ==0){                                 //check if its first initialisation of device
+                if (ReadInitFlag()==0){                             //check if its first initialisation of device
                     GSM_ON();                                       //turn on GSM module
                     SIM900_SEND(2);                                 //send a configuration request message to server
-                    initcheck=1;                                    //set initcheck flag
+                    SetInitFlag();                                  //set initcheck flag
                 }
                 char c=0;
                 while ((TEMP_INT==0)&&(c<=3)){                      //check DHT11 sensor 3 times for reading if no data received
@@ -181,14 +182,13 @@ void routine(){
                 DayHUM[tempcounter]=RH_INT;
                 tempcounter++;
                 delay_1ms(1);
-                sleep();                                            //sleep for 2h
+                sleep();
 
                 if (tempcounter==2){
-                    getConductivity();                              //get conductivity value from sensor
                     days++;                                         //increment days
-                    getImage();                                     //get image from sensor
                     avgTempHum();                                   //calculate average temperature and humidity
                     minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
+                    getConductivity();                              //get conductivity value from sensor
                     getWaterLevel();                                //get water level from ultrasonic sensor
 
                     ShiftData();                                    //shift gathered data by offset

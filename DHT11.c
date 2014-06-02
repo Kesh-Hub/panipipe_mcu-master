@@ -101,12 +101,25 @@ unsigned char DHT_Reading(){
 }
 
 void getTempHum(){
-    DHT11_POWER = 1;
-    delay_1s(1);
-    ErrorMSG = DHT_Reading();
-    delay_100ms(5);
-    DHT11_POWER = 0;
+    DayTEMP[0]=22;
+    DayHUM[0]=44;
+    DayTEMP[1]=23;
+    DayHUM[1]=45;
+    DayTEMP[2]=24;
+    DayHUM[2]=45;
 }
+
+//void getTempHum(){
+//    DHT11_POWER = 1;
+//    delay_1s(1);
+//    ErrorMSG = DHT_Reading();
+//    delay_100ms(5);
+//    DHT11_POWER = 0;
+////    if(!ErrorMSG)
+////        show_DHT();
+////    else
+////        show_DHTError(ErrorMSG);;
+//}
 
 void avgTempHum(){
     unsigned int sum1=0;

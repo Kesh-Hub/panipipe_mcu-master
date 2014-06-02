@@ -16,7 +16,7 @@ void ShiftData(){
     minHUM = (char)minHUM+OFFSET;
     maxHUM = (char)maxHUM+OFFSET;
     WaterLevel = (char)WaterLevel+OFFSET;
-    Conductivity = (char)WaterLevel+OFFSET;
+    Conductivity = (char)Conductivity+OFFSET;
 }
 
 void SaveData(){
@@ -101,4 +101,18 @@ void ReadConfig(){
     WATER_THRESHOLD=ReadMemory(50);
     TRANSMIT_FREQ=ReadMemory(51);
     CONFIG_FREQ=ReadMemory(52);
+}
+
+void SetInitFlag(){
+    WriteMemory(53,1);
+}
+
+unsigned char ReadInitFlag(){
+    int val = ReadMemory(53);
+    if (val==1){
+        return 1;
+    }
+    else{
+        return 0;
+    }
 }
