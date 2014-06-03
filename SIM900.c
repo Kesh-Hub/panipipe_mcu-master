@@ -11,9 +11,9 @@ void initUSART1(){
 void sendData(){
     /****temp fix****/
     Close1USART();
-    delay_1s(1);
+    delay_1s(5);
     initUSART1();
-    delay_1s(10);
+    delay_1s(5);
     puts1USART("AT\r\n");
     delay_1s(1);
     puts1USART("AT+CMGF=1\r\n");
@@ -81,7 +81,7 @@ unsigned char configReceive(){
     putrs1USART("AT+CNMI=2,3,0,0\r\n"); //set module to discard messages after retreival
     delay_1s(1);
     gets1USART((char*)RXdata,size); //receive upto three characters in text message
-    if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
+    if (strstr(RXdata,"+447937946751")!=NULL){ //Server: +447937946751
         //perform server commands
         if ((strstr(RXdata,"§")!=NULL)){ //check for config prefix
             // change config settings
@@ -129,7 +129,7 @@ void sendConReq(){
     delay_1s(1);
     puts1USART("AT+CSCS=\"GSM\"\r\n");
     delay_1s(1);
-    puts1USART("AT+CMGS=\"+447861743881\"\r\n");        //Server:+447937946751
+    puts1USART("AT+CMGS=\"+447937946751\"\r\n");        //Server:+447937946751
     delay_1s(1);
     puts1USART("configrequest");
     Write1USART(26); //send character 26 i.e ctrl-z

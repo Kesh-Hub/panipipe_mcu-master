@@ -133,8 +133,8 @@ void demo_test(){
                 minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
                 getWaterLevel();                                //get water level from ultrasonic sensor
                 getConductivity();
-                getSolarLevel();
-                getBatteryLevel();
+                getSolarReading();
+                getBatteryReading();
                 ShiftData();                                    //shift gathered data by offset
                 if ((WaterLevel-OFFSET) >= WATER_THRESHOLD){    //check if water level is too low
                     SMS_data[0]=WARNING_PREFIX;                 //initiate message with warning char

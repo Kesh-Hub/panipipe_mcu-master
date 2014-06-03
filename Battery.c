@@ -68,3 +68,13 @@ unsigned char SolarStatus(){
         return 1;
     }
 }
+
+void getBatteryReading(){
+    getBatteryLevel();
+    BatteryValue = BatteryLevel/10;
+}
+
+void getSolarReading(){
+    getSolarLevel();
+    SolarValue = SolarLevel/10;
+}

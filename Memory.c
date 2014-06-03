@@ -17,8 +17,8 @@ void ShiftData(){
     maxHUM = (char)maxHUM+OFFSET;
     WaterLevel = (char)WaterLevel+OFFSET;
     Conductivity = (char)Conductivity+OFFSET;
-    BatteryLevel = (char)BatteryLevel+OFFSET;
-    SolarLevel = (char)SolarLevel+OFFSET;
+    BatteryValue = (char)BatteryValue+OFFSET;
+    SolarValue = (char)SolarValue+OFFSET;
 }
 
 void SaveData(){
@@ -32,8 +32,8 @@ void SaveData(){
         WriteMemory(5,(char)maxHUM);
         WriteMemory(6,(char)WaterLevel);
         WriteMemory(7,(char)Conductivity);
-        WriteMemory(8,(char)BatteryLevel);
-        WriteMemory(9,(char)SolarLevel);
+        WriteMemory(8,(char)BatteryValue);
+        WriteMemory(9,(char)SolarValue);
     }
     else if (days==2){
         WriteMemory(10,(char)avgTEMP);
@@ -44,8 +44,8 @@ void SaveData(){
         WriteMemory(15,(char)maxHUM);
         WriteMemory(16,(char)WaterLevel);
         WriteMemory(17,(char)Conductivity);
-        WriteMemory(18,(char)BatteryLevel);
-        WriteMemory(19,(char)SolarLevel);
+        WriteMemory(18,(char)BatteryValue);
+        WriteMemory(19,(char)SolarValue);
     }
     else if (days==3){
         WriteMemory(20,(char)avgTEMP);
@@ -56,8 +56,8 @@ void SaveData(){
         WriteMemory(25,(char)maxHUM);
         WriteMemory(26,(char)WaterLevel);
         WriteMemory(27,(char)Conductivity);
-        WriteMemory(28,(char)BatteryLevel);
-        WriteMemory(29,(char)SolarLevel);
+        WriteMemory(28,(char)BatteryValue);
+        WriteMemory(29,(char)SolarValue);
     }
     else if (days==4){
         WriteMemory(30,(char)avgTEMP);
@@ -68,8 +68,8 @@ void SaveData(){
         WriteMemory(35,(char)maxHUM);
         WriteMemory(36,(char)WaterLevel);
         WriteMemory(37,(char)Conductivity);
-        WriteMemory(38,(char)BatteryLevel);
-        WriteMemory(39,(char)SolarLevel);
+        WriteMemory(38,(char)BatteryValue);
+        WriteMemory(39,(char)SolarValue);
     }
     else if (days==5){
         WriteMemory(40,(char)avgTEMP);
@@ -80,8 +80,8 @@ void SaveData(){
         WriteMemory(45,(char)maxHUM);
         WriteMemory(46,(char)WaterLevel);
         WriteMemory(47,(char)Conductivity);
-        WriteMemory(48,(char)BatteryLevel);
-        WriteMemory(49,(char)SolarLevel);
+        WriteMemory(48,(char)BatteryValue);
+        WriteMemory(49,(char)SolarValue);
     }
 
 }

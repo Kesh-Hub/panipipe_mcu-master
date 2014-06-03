@@ -115,6 +115,7 @@ unsigned char WaterLevel;                                           //used to st
 unsigned int Conductivity;                                          //used to store the conductivity value from sensor
 unsigned char CheckByte;                                            //used to store the calculated checkbyte to be transmitted in text message
 unsigned int BatteryLevel= 0;                                       //used to store current battery level
+unsigned char BatteryValue, SolarValue;
 unsigned int SolarLevel = 0;                                        //used to store current solar power level
 /*=========================== FUNCTION PROTOTYPE ===============================
 ==============================================================================*/
@@ -211,6 +212,8 @@ extern void getSolarLevel();
 extern void ChargeBattery();
 extern unsigned char BatteryCharged();
 extern unsigned char SolarStatus();
+extern void getBatteryReading();
+extern void getSolarReading();
 
 //To be defined
 extern void getConductivity();
