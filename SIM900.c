@@ -19,7 +19,7 @@ void sendData(){
     puts1USART("AT+CMGF=1\r\n");
     delay_1s(1);
     puts1USART("AT+CSCS=\"GSM\"\r\n");
-    delay_1s(1);;
+    delay_1s(1);
     puts1USART("AT+CMGS=\"+447937946751\"\r\n");        //Server:+447937946751
     delay_1s(1);
     putrs1USART(SMS_data);
@@ -56,10 +56,10 @@ unsigned char uartReceive(unsigned char data[]){
 }
 
 unsigned char serverReceive(unsigned char data[]){
-    unsigned char size = sizeof(data)+52; //first 52 characters contains time and recipient number
+    unsigned char size = sizeof(data)+61; //first 52 characters contains time and recipient number
     gets1USART((char*)RXdata,size); //receive upto two characters in text message
-    if (strstr(RXdata, "£")){
-        if (strstr(RXdata,"+447937946751")!=NULL){ //Server: +447937946751
+    if (strstr(RXdata, "+447937946751")){
+        if (strstr(RXdata,"00A3")!=NULL){ //Server: +447937946751
             //perform server commands
             if ((strstr(RXdata,data)!=NULL)){
                 return 1;
@@ -75,9 +75,13 @@ unsigned char serverReceive(unsigned char data[]){
 }
 
 unsigned char configReceive(){
-    unsigned char size = 51+3;
+    unsigned char size = 52+3;
+    puts1USART("AT+CSCS=\"UCS2\"\r\n");
+    delay_1s(1);
+    putrs1USART("AT+CNMI=2,3,0,0\r\n"); //set module to discard messages after retreival
+    delay_1s(1);
     gets1USART((char*)RXdata,size); //receive upto three characters in text message
-    if (strstr(RXdata,"+447937946751")!=NULL){ //Server: +447937946751
+    if (strstr(RXdata,"+447861743881")!=NULL){ //Server: +447937946751
         //perform server commands
         if ((strstr(RXdata,"§")!=NULL)){ //check for config prefix
             // change config settings
@@ -114,16 +118,22 @@ void GSM_OFF(){
 }
 
 void sendConReq(){
+/****temp fix****/
+    Close1USART();
+    delay_1s(1);
+    initUSART1();
+    delay_1s(10);
+    puts1USART("AT\r\n");
+    delay_1s(1);
     puts1USART("AT+CMGF=1\r\n");
     delay_1s(1);
     puts1USART("AT+CSCS=\"GSM\"\r\n");
-    delay_1s(1);;
-    puts1USART("AT+CMGS=\"+447937946751\"\r\n");        //Server:+447937946751
     delay_1s(1);
-    putc1USART(CONFIG_PREFIX);
+    puts1USART("AT+CMGS=\"+447861743881\"\r\n");        //Server:+447937946751
+    delay_1s(1);
+    puts1USART("configrequest");
     Write1USART(26); //send character 26 i.e ctrl-z
     delay_1s(1);
-
     // wait for message to be sent
     Close1USART();
     delay_1s(1);
@@ -153,7 +163,7 @@ void SIM900_SEND(char type){
 
         /* wait for response from server */
         if (type==1){
-            if (serverReceive("OK")){                           //if acknolegment received
+            if (serverReceive("004F004B")){                           //if acknolegment received
                 GSM_OFF();                                      //turn off sim900
             }
             else{
@@ -162,7 +172,6 @@ void SIM900_SEND(char type){
         }
         else{
             if (configReceive()){                               //if acknolegment received
-
                 GSM_OFF();                                      //turn off sim900
             }
             else{

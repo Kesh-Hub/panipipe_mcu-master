@@ -97,7 +97,7 @@ volatile unsigned char TEMP_INT, TEMP_DEC, RH_INT, RH_DEC, DIS_INT;
 volatile unsigned char ErrorMSG; //Used to store the Error Message No.
 volatile char message;                                                  //used to store received msg from the computer
 
-unsigned char WATER_THRESHOLD = 20;
+unsigned char WATER_THRESHOLD = 31;
 unsigned char TRANSMIT_FREQ = 3;
 unsigned char CONFIG_FREQ = 15;
 unsigned char INIT_CHECK=1;                                          //used to check if device has been initialised for the first time

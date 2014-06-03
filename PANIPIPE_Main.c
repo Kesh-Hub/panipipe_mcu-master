@@ -112,11 +112,11 @@ void demo_test(){
     char c=0;
     //if(SolarStatus()==1){
         if (BatteryCharged()){
-            if (ReadInitFlag()==0){                             //check if its first initialisation of device
-                GSM_ON();                                       //turn on GSM module
-                SIM900_SEND(2);                                 //send a configuration request message to server
-                SetInitFlag();                                  //set initcheck flag
-            }
+//            if (ReadInitFlag()==0){                             //check if its first initialisation of device
+//                GSM_ON();                                       //turn on GSM module
+//                SIM900_SEND(2);                                 //send a configuration request message to server
+//                SetInitFlag();                                  //set initcheck flag
+//            }
             for (char d=0; d<TRANSMIT_FREQ; d++){
                 days++;                                         //increment days
                 for (int i=0; i<tempcounter; i++){
@@ -127,12 +127,14 @@ void demo_test(){
                     }
                     DayTEMP[i]=TEMP_INT;
                     DayHUM[i]=RH_INT;
-                    delay_1s(30);                               //wait 30 seconds between each temperature readings
+                    delay_1s(3);                               //wait 30 seconds between each temperature readings
                 }
                 avgTempHum();                                   //calculate average temperature and humidity
                 minmaxTempHum();                                //calculate minimum and maximum temperature and humidity
                 getWaterLevel();                                //get water level from ultrasonic sensor
                 getConductivity();
+                getSolarLevel();
+                getBatteryLevel();
                 ShiftData();                                    //shift gathered data by offset
                 if ((WaterLevel-OFFSET) >= WATER_THRESHOLD){    //check if water level is too low
                     SMS_data[0]=WARNING_PREFIX;                 //initiate message with warning char
