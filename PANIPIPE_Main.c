@@ -68,6 +68,7 @@ void initPorts(void)
     HCSR_Config();
     SOLAR_POWER_CONFIG = 0;
     SOLAR_SIGNAL_CONFIG = 1;
+    SOLAR_POWER=0;
 
     COND_SIGNAL_CONFIG = 1;
     COND_POWER_CONFIG =0;
@@ -102,8 +103,8 @@ void initPorts(void)
 void main() {
     initPorts();
     while(1){
-        demo_test();
-        sleep();
+      getBatteryReading();
+      getSolarReading();
     }
 }
 

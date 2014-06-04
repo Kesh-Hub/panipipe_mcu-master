@@ -37,6 +37,9 @@
 #define DATA_SUFFIX (char)164
 #define WARNING_PREFIX (char)165
 #define CONFIG_PREFIX (char)167
+#define BATTERY_MAX 82
+#define BATTERY_MIN 65
+#define SOLAR_MAX 90
 ///////////////////////////////////////
 /////// SENSOR PIN CONNECTION  ////////
 ///////////////////////////////////////

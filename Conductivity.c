@@ -36,5 +36,5 @@ void getConductivity(){
     peak_value = get_ADC_value();                                   // gets 10 bit adc value
     scaled_value = (float) peak_value*(float) (5.08f/1023f);        // adc scaled value now scaled and ready
     net_voltage = (scaled_value - 2.46);
-    Conductivity = CELL_CONSTANT*100/(net_voltage - Y_INTERCEPT);       // calculate conductivity value
+    Conductivity = (CELL_CONSTANT*100/(net_voltage - Y_INTERCEPT))/95;       // calculate conductivity value
 }

@@ -70,11 +70,23 @@ unsigned char SolarStatus(){
 }
 
 void getBatteryReading(){
-    getBatteryLevel();
-    BatteryValue = BatteryLevel/10;
+    int sum=0;
+    for (char j=0; j<3; j++){
+        getBatteryLevel();
+        sum+=(BatteryLevel/10);
+    }
+    unsigned char reading = sum/3;
+    float bvalue = (float) (((reading-BATTERY_MIN)*100f)/((BATTERY_MAX-BATTERY_MIN)*100f))*95f;
+    BatteryValue = (char)bvalue;
 }
 
 void getSolarReading(){
-    getSolarLevel();
-    SolarValue = SolarLevel/10;
+    int sum=0;
+    for (char j=0; j<3; j++){
+        getSolarLevel();
+        sum+=(SolarLevel/10);
+    }
+    unsigned char reading = sum/3;
+    float svalue = (float) ((reading*100f)/(SOLAR_MAX*100f))*95f;
+    SolarValue = (char)svalue;
 }

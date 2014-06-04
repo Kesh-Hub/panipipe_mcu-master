@@ -76,10 +76,6 @@ unsigned char serverReceive(unsigned char data[]){
 
 unsigned char configReceive(){
     unsigned char size = 52+3;
-    puts1USART("AT+CSCS=\"UCS2\"\r\n");
-    delay_1s(1);
-    putrs1USART("AT+CNMI=2,3,0,0\r\n"); //set module to discard messages after retreival
-    delay_1s(1);
     gets1USART((char*)RXdata,size); //receive upto three characters in text message
     if (strstr(RXdata,"+447937946751")!=NULL){ //Server: +447937946751
         //perform server commands
